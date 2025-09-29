@@ -55,8 +55,8 @@ int main()
     queue<node*> que;
     que.push(root);
 
-    //levelOrderTraversal(root);
-    levelOrderRecursiveTraversal(que.front(), que);
+    levelOrderTraversal(root);
+    //levelOrderRecursiveTraversal(que.front(), que);
 
     return 0;
 }
