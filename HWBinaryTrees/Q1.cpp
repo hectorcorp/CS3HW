@@ -9,7 +9,7 @@ int fastFind(vector<double> &A, double key)
     int R = A.size() - 1;
     while(L <= R)
     {
-        int M = L + (R - L) / 2;
+        int M = (R + L) / 2;
         if (A[M] == key)
             return M;
         else if (A[M] > key)
@@ -22,6 +22,6 @@ int fastFind(vector<double> &A, double key)
 
 int main() {
     vector<double> list = {1, 4, 8, 10, 20};
-    cout << fastFind(list, 5) << endl;
+    cout << fastFind(list, 4) << endl;
     return 0;
 }
