@@ -81,9 +81,7 @@ int main()
 	animals.insert("goose", 3739382);
 	animals.insert("goatfish", 19984);
 	animals.insert("giraffe", 978584);
-	cout << "Testing animals.size(), size =" << animals.size() << endl;
 	test(animals.size() == 13);
-	cout << "Testing animals.height(), height =" << animals.height() << endl;
 	test(animals.height() == 3);
 
 	Autocompleter words;
