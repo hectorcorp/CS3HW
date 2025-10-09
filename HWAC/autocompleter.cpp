@@ -166,20 +166,31 @@ void Autocompleter::completions(string x, vector<string> &T)
     else if(E.size() == 1) T.push_back(E[0].s);
     else if(E.size() == 2)
     {
-        T.push_back(E[0].s);
-        T.push_back(E[1].s);
+        if(E[0].freq > E[1].freq)
+        {
+            T.push_back(E[0].s);
+            T.push_back(E[1].s);
+        }  
+        else
+        {
+            T.push_back(E[1].s);
+            T.push_back(E[0].s);
+        }
     }
     else
     {
         for(int i = 0; i < 3; i++)
         {
+            int mostFreq = 0;
             for(int x = 0; x < E.size(); x++)
             {
-                
+                if(E[x].freq > E[mostFreq].freq)
+                    mostFreq = x;
             }
+            T.push_back(E[mostFreq].s);
+            E.erase(E.begin() + mostFreq);
         }
     }
-    
 }
 
 
