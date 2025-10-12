@@ -93,6 +93,7 @@ private:
 	Node* root;
 
 
+
 	// Optional helper methods (you'll probably want them)
 
 	// Returns the size of the binary tree rooted at p.
