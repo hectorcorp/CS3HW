@@ -192,7 +192,3 @@ void Autocompleter::completions(string x, vector<string> &T)
         }
     }
 }
-
-
-
-
