@@ -1,4 +1,6 @@
 #include "autocompleter.h"
+#include <iostream>
+using namespace std;
 // Creates a new Autocompleter with an empty dictionary.
 //
 // Must run in O(1) time.
@@ -24,6 +26,8 @@ void Autocompleter::insert(string x, int freq)
         bool inserted = false;
         for(int i = 0; i <  n->top.size(); i++)
         {
+            if(e.s == n->top[i].s)
+                break;
             if(e.freq > n->top[i].freq)
             {
                 n->top.insert(n->top.begin() + i, e);
