@@ -24,11 +24,14 @@ void Autocompleter::insert(string x, int freq)
     for(char a: x)
     {
         bool inserted = false;
-        for(int i = 0; i <  n->top.size(); i++)
+        for(int i = 0; i < n->top.size(); i++)
         {
             if(e.s == n->top[i].s)
+            { 
+                inserted = true;
                 break;
-            if(e.freq > n->top[i].freq)
+            }
+            else if(e.freq > n->top[i].freq)
             {
                 n->top.insert(n->top.begin() + i, e);
                 inserted = true;
@@ -38,14 +41,17 @@ void Autocompleter::insert(string x, int freq)
         if(!inserted) 
             n->top.push_back(e);   
 
+
         if(n->top.size() > 3)
             n->top.pop_back();
 
+        
         if(n->children[int(a)] == nullptr)
             n->children[int(a)] = new Node();
 
         n = n->children[int(a)];
     }
+
     if(n->marked) 
         return;
     n->marked = true;
@@ -74,7 +80,7 @@ void Autocompleter::completions(string x, vector<string> &T)
     for(char a: x)
     {
         if(n->children[int(a)] == nullptr)
-            break;
+            return;
         else
             n = n->children[int(a)];
     }

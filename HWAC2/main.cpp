@@ -80,13 +80,6 @@ int main()
 	animals.insert("goatfish", 19984);
 	animals.insert("giraffe", 978584);
 	test(animals.size() == 13);
-	animals.completions("e", R);
-	cout << R.size() << endl;
-	cout << R[0] << endl;
-	cout << R[1] << endl;
-	cout << R[2] << endl;
-	cout << "Temp Test Complete";
-	return 0;
 
 	Autocompleter words;
 	test(words.size() == 0);
