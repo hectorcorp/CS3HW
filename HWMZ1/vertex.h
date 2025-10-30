@@ -1,0 +1,29 @@
+
+#include <vector>
+
+using namespace std;
+
+// A helper class implementing a vertex in 
+// an adjacency-list-based graph.
+class Vertex
+{
+        public:
+                Vertex(int r, int c)
+                {
+                        row = r;
+                        col = c;
+                        bread = nullptr;
+                }
+
+                // Corresponding row and column location in maze
+                int row;
+                int col;
+
+                // List of neighboring vertices
+                vector<Vertex*> neighs;
+
+                // Bread crumb for BFS
+                Vertex* bread;
+                
+};
+
