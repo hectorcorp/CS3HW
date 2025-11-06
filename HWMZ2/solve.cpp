@@ -69,7 +69,7 @@ void assignNeighs(unordered_map<pair<int,int>, Vertex*, pair_hash>& hashmap, vec
         //South
         if(hashmap.find({col + 1,row}) != hashmap.end())
         {
-            ver.second->neighs.push_back({hashmap.at({col + 1,row}), 1});
+            ver.second->neighs.push_back({hashmap.at({ col + 1,row }), 1});
         }
         //West
         if(hashmap.find({col,row - 1}) != hashmap.end())
@@ -77,13 +77,13 @@ void assignNeighs(unordered_map<pair<int,int>, Vertex*, pair_hash>& hashmap, vec
             ver.second->neighs.push_back({hashmap.at({col,row - 1}), 1});
         }
         //Connect a portal to another portal
-        if(map[row][col] != ' ')
+        if(map[col][row] != ' ')
         {
-            for(Vertex* portalVert : hashPortals.at(map[row][col]))
+            for(Vertex* portalVert : hashPortals.at(map[col][row]))
             {
                 if(portalVert != ver.second)
                 {
-                    ver.second->neighs.push_back({portalVert, map[row][col]});
+                    ver.second->neighs.push_back({portalVert, map[col][row] - '0'});
                 }
             }
         }
@@ -117,10 +117,10 @@ void findExits(vector<vector<char>>& map, unordered_map<pair<int,int>, Vertex*, 
 }
 
 
-void dijkstra(Vertex* start, unordered_map<pair<int,int>, Vertex*, pair_hash> hashmap)
+void dijkstra(Vertex* start, unordered_map<pair<int,int>, Vertex*, pair_hash> hashmap, Vertex* end)
 {
     MinPriorityQueue<Vertex*> PQ;
-    for(auto ver : hashmap)
+    for(auto& ver : hashmap)
     {
         PQ.push(ver.second, ver.second->value);
     }
@@ -128,6 +128,7 @@ void dijkstra(Vertex* start, unordered_map<pair<int,int>, Vertex*, pair_hash> ha
     while(PQ.size() > 0)
     {
         Vertex* v = PQ.front();
+        if (v == end) break;
         PQ.pop();
         for(pair<Vertex*, int> neighbor : v->neighs)
         {
@@ -135,6 +136,7 @@ void dijkstra(Vertex* start, unordered_map<pair<int,int>, Vertex*, pair_hash> ha
             {
                 neighbor.first->value = v->value + neighbor.second;
                 neighbor.first->bread = v;
+                PQ.decrease_key(neighbor.first, neighbor.first->value);
             }
         }
     }
@@ -188,7 +190,7 @@ string solve(string maze)
     findExits(map, hashmap, start, end);
 
     //Use Breadth first search on the start
-    dijkstra(start, hashmap);
+    dijkstra(start, hashmap, end);
 
     //Update map with 'o' using the bread trails from exit to start
     updateMap(map, end);

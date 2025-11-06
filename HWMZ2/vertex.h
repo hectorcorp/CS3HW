@@ -25,6 +25,6 @@ class Vertex
                 Vertex* bread;
 
                 // List of neighboring vertices, int is the weight to go to Vertex*
-                vector< pair<Vertex*, int> > neighs;
+                vector<pair<Vertex*,int>> neighs;
 };
 
