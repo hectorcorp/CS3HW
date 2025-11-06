@@ -30,6 +30,7 @@ class MinPriorityQueue
 		// Must run in O(1) time.
 		int size()
 		{
+			cout << "hi";
 			return H.size();
 		}	
 

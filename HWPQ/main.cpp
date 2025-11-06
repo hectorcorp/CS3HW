@@ -228,7 +228,6 @@ int main()
 	// [(e, 35), (b, 20), (c, 15), (a, 10), (d, 8)]
 	Q6.decrease_key("b", 5);
 	// [(e, 35), (c, 15), (a, 10), (d, 8), (b, 5)]
-
 	test(Q6.front() == "b"); 
 	test(Q6.size() == 5);
 
