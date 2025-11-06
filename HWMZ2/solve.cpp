@@ -1,7 +1,6 @@
 #include "solve.h"
 #include "vertex.h"
 
-
 //method i found to be able to use a pair as the key for an unordered_map
 struct pair_hash {
     size_t operator()(const pair<int,int>& p) const {
@@ -25,56 +24,71 @@ void assignMap(vector<vector<char>>& map, string maze)
     }
 }
 
-
-void makeVertex(vector<vector<char>> & map, unordered_map<pair<int,int>, Vertex*, pair_hash> & hashmap)
+void makeVertex(vector<vector<char>> & map, unordered_map<pair<int,int>, Vertex*, pair_hash>& hashmap, unordered_map<int, vector<Vertex*>>& hashPortals)
 {
     for(int col = 0; col < map.size(); col++)
     {
         for(int row = 0; row < map[0].size(); row++)
         {
-            if(map[col][row] == ' ')
+            if(map[col][row] != '#' && map[col][row] != '\n')
             {
                 //assign row/col for vertex
                 Vertex* n = new Vertex(row, col);
 
                 //add to hashmap
                 hashmap[{col,row}] = n; 
+
+                if(map[col][row] != ' ')
+                {
+                    hashPortals[map[col][row]].push_back(n);
+                }
             }
         }
     }
 }
 
-
-void assignNeighs(unordered_map<pair<int,int>, Vertex*, pair_hash>& hashmap)
+void assignNeighs(unordered_map<pair<int,int>, Vertex*, pair_hash>& hashmap, vector<vector<char>>& map, unordered_map<int, vector<Vertex*>> hashPortals)
 {
     for(auto ver : hashmap)
     {
         int row = ver.second->row;
         int col = ver.second->col;
 
+        //Assign every non wall a neighbor to its surrounding vertexs
+
         //North
         if(hashmap.find({col - 1,row}) != hashmap.end())
         {
-            ver.second->neighs.push_back(hashmap.at({col - 1,row}));
+            ver.second->neighs.push_back({hashmap.at({col - 1,row}), 1});
         }
         //East
         if(hashmap.find({col,row + 1}) != hashmap.end())
         {
-            ver.second->neighs.push_back(hashmap.at({col,row + 1}));
+            ver.second->neighs.push_back({hashmap.at({col,row + 1}), 1});
         }
         //South
         if(hashmap.find({col + 1,row}) != hashmap.end())
         {
-            ver.second->neighs.push_back(hashmap.at({col + 1,row}));
+            ver.second->neighs.push_back({hashmap.at({col + 1,row}), 1});
         }
         //West
         if(hashmap.find({col,row - 1}) != hashmap.end())
         {
-            ver.second->neighs.push_back(hashmap.at({col,row - 1}));
+            ver.second->neighs.push_back({hashmap.at({col,row - 1}), 1});
+        }
+        //Connect a portal to another portal
+        if(map[row][col] != ' ')
+        {
+            for(Vertex* portalVert : hashPortals.at(map[row][col]))
+            {
+                if(portalVert != ver.second)
+                {
+                    ver.second->neighs.push_back({portalVert, map[row][col]});
+                }
+            }
         }
     } 
 }
-
 
 void findExits(vector<vector<char>>& map, unordered_map<pair<int,int>, Vertex*, pair_hash> hashmap, Vertex*& start, Vertex*& end)
 {
@@ -88,6 +102,7 @@ void findExits(vector<vector<char>>& map, unordered_map<pair<int,int>, Vertex*, 
                 if (hashmap.find({ col,row }) != hashmap.end())
                 {
                     start = hashmap.at({col, row});
+                    hashmap.at({col, row})->value = 0;
                     foundFirst = true;
                 }
                 
@@ -102,26 +117,24 @@ void findExits(vector<vector<char>>& map, unordered_map<pair<int,int>, Vertex*, 
 }
 
 
-void breadthFirstSearch(Vertex* start)
+void dijkstra(Vertex* start, unordered_map<pair<int,int>, Vertex*, pair_hash> hashmap)
 {
-    unordered_set<Vertex*> marked;
-    queue<Vertex*> Q;
-    marked.insert(start);
-    Q.push(start);
-
-    while(!Q.empty())
+    MinPriorityQueue<Vertex*> PQ;
+    for(auto ver : hashmap)
     {
-        Vertex* n = Q.front();
-        Q.pop();
+        PQ.push(ver.second, ver.second->value);
+    }
 
-        for(auto vert : n->neighs)
+    while(PQ.size() > 0)
+    {
+        Vertex* v = PQ.front();
+        PQ.pop();
+        for(pair<Vertex*, int> neighbor : v->neighs)
         {
-            if(marked.find(vert) == marked.end())
+            if(v->value + neighbor.second < neighbor.first->value)
             {
-                marked.insert(vert);
-                Q.push(vert);
-
-                vert->bread = n;
+                neighbor.first->value = v->value + neighbor.second;
+                neighbor.first->bread = v;
             }
         }
     }
@@ -157,6 +170,7 @@ string solve(string maze)
 {
     string answer = "";
     vector<vector<char>> map;
+    unordered_map<int, vector<Vertex*>> hashPortals;   
     unordered_map<pair<int,int>, Vertex*, pair_hash> hashmap;
     Vertex* start;
     Vertex* end;
@@ -165,16 +179,16 @@ string solve(string maze)
     assignMap(map, maze);
 
     //Add vertex items to hashmap
-    makeVertex(map, hashmap);
+    makeVertex(map, hashmap, hashPortals);
 
     //Assign neighbors to all vertexes
-    assignNeighs(hashmap);
+    assignNeighs(hashmap, map, hashPortals);
 
     //Find both exits
     findExits(map, hashmap, start, end);
 
     //Use Breadth first search on the start
-    breadthFirstSearch(start);
+    dijkstra(start, hashmap);
 
     //Update map with 'o' using the bread trails from exit to start
     updateMap(map, end);
